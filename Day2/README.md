@@ -16,11 +16,4 @@ La nivelul acestui task, s-a creat un nou proiect Express care respecta urmatoar
 
 Tabelul "Employees" are urmatoarea structura:
 nume: Employees
-Coloane/ Campuri:
-  Id 
-  Name varchar
-  Adress varchar
-  Email varchar
-  Hire_date datetime
-  Salary int
-  Job_Title varchar
+Coloane/ Campuri: Id, Name (VARCHAR),Adress (VARCHAR), Email (VARCHAR), Hire_date (DATETIME), Salary (INT), Job_Title (VARCHAR)
