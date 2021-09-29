@@ -3,26 +3,20 @@ const exphbs = require("express-handlebars");
 const bodyParser = require("body-parser");
 const path = require("path");
 
-const Sequelize = require("sequelize");
-const db = new Sequelize("aquasoft", "root", "5630", {
-    host: "localhost",
-    dialect: "mysql",
-    operatorsAliases: false,
-    pool: {
-        max: 5,
-        min: 0,
-        acquire: 30000,
-        idle: 10000,
-    },
-});
+// Database
+
+const db = require("./config/database");
 
 //Test DB
 db.authenticate()
     .then(() => console.log("Database connected..."))
     .catch((err) => console.log("Error", err));
+
 const app = express();
 
 app.get("/", (req, res) => res.send("INDEX"));
+
+app.use("/employees", require("./routes/employees"));
 
 const PORT = process.env.PORT || 5000;
 
