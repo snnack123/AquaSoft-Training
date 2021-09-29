@@ -5,7 +5,7 @@ const Employee = require("../models/Employee"); //Preluam datele pe care am vrut
 module.exports = router;
 // Afiseaza toti angajatii
 router.get("/", (req, res) =>
-    Employee.findAll() // Incercam sa gasim datele din table Angajati
+    Employee.findAll() // Incercam sa gasim datele din tabela Angajati
     .then((employees) => {
         console.log(employees); //In cazul in care se reuseste gasirii datelor, le v-om afisa in consola
         res.sendStatus(200); //In cazul in care totul decurge ok, v-om afisa pe pagina web mesajul "OK"
