@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("../config/database");
 
+// Ce atribute vreau sa afisez din tabela angajati, si in ce ordine
 const Employees = db.define("employee", {
     Name: {
         type: Sequelize.STRING,
@@ -22,4 +23,5 @@ const Employees = db.define("employee", {
     },
 });
 
+// Transmit ceea ce am extras catre alta pagina
 module.exports = Employees;
