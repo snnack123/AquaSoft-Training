@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../config/database"); // Legatura cu baza de date
-const Employee = require("../models/Employee"); //Preluam datele pe care am vrut sa le afisam. Date selectate in Employee.js
-module.exports = router;
+const db = require("../models");
+const Employee = db.employee; //Preluam datele pe care am vrut sa le afisam. Date selectate in Employee.js
+const Project = db.project;
+
 // Afiseaza toti angajatii
 router.get("/", (req, res) =>
     Employee.findAll() // Incercam sa gasim datele din tabela Angajati
@@ -13,10 +14,10 @@ router.get("/", (req, res) =>
     .catch((err) => console.log(err))
 );
 
-// Afiseaza 1 singur angajat pe baza de id
-router.get("/profile/:id", (req, res) => {
-    const id = req.params.id;
-    Employee.findByPk(id)
+// Afiseaza 1 singur angajat pe baza de nume
+router.get("/profile/:Name", (req, res) => {
+    const empName = req.params.Name;
+    Employee.findOne({ where: { Name: empName } })
         .then((employees) => {
             console.log(employees);
             res.sendStatus(200);
@@ -34,6 +35,7 @@ router.post("/add", (req, res) => {
         Hire_date: req.body.hire_date,
         Salary: req.body.salary,
         Job_Title: req.body.job_title,
+        projects_Id: req.body.projects_id,
     };
 
     // Adaugarea datelor in baza de date
@@ -56,7 +58,8 @@ Exemplu:
    "email": "robert@yahoo.com",
    "hire_date": "2020-01-01",
    "salary": "3500",
-   "job_title": "middle"
+   "job_title": "middle",
+   "projects_id: 1"
 }
 */
 
@@ -92,7 +95,8 @@ Exemplu:
    "Email": "robert@yahoo.com",
    "Hire_date": "2020-01-01",
    "Salary": "1500",
-   "Job_title": "middle"
+   "Job_title": "middle",
+   "projects_Id": "2"
 }
 */
 // Stergere date angajat prin id
@@ -119,3 +123,16 @@ router.delete("/delete/:id", (req, res) => {
             });
         });
 });
+
+router.get("/emp_projects", (req, res) => {
+    Employee.findAll({
+            include: [{
+                model: Project,
+            }, ],
+        })
+        .then((data) => {
+            res.send(data);
+        })
+        .catch((err) => console.log(err));
+});
+module.exports = router;
