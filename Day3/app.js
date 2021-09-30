@@ -4,13 +4,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 
 // Database
-
-const db = require("./config/database");
-
-// Test if DataBase is Connected
-db.authenticate()
-    .then(() => console.log("Database connected..."))
-    .catch((err) => console.log("Error", err));
+const db = require("./models");
 
 const app = express();
 app.use(bodyParser.json()); // Stie sa interpreteze obiectul trimis
@@ -24,3 +18,7 @@ app.use("/projects", require("./routes/projects"));
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, console.log(`Server started on port ${PORT}`));
+
+db.sequelize.sync();
+
+module.exports = db;
