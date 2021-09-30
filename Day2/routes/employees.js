@@ -35,7 +35,7 @@ router.post("/add", (req, res) => {
         Hire_date: req.body.hire_date,
         Salary: req.body.salary,
         Job_Title: req.body.job_title,
-        projects_Id: req.body.projects_id,
+        projectId: req.body.projectid,
     };
 
     // Adaugarea datelor in baza de date
@@ -59,7 +59,7 @@ Exemplu:
    "hire_date": "2020-01-01",
    "salary": "3500",
    "job_title": "middle",
-   "projects_id: 1"
+   "projectid: 1"
 }
 */
 
@@ -96,7 +96,7 @@ Exemplu:
    "Hire_date": "2020-01-01",
    "Salary": "1500",
    "Job_title": "middle",
-   "projects_Id": "2"
+   "projectId": "2"
 }
 */
 // Stergere date angajat prin id
