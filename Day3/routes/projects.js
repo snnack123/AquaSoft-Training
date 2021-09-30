@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../config/database"); // Legatura cu baza de date
-const Project = require("../models/Project"); //Preluam datele pe care am vrut sa le afisam. Date selectate in Project.js
+const db = require("../models");
+const Project = db.project; //Preluam datele pe care am vrut sa le afisam. Date selectate in Project.js
 module.exports = router;
 // Afiseaza toate proiectele
 router.get("/", (req, res) =>
