@@ -7,8 +7,8 @@ const Project = db.project;
 // Afiseaza toti angajatii
 router.get("/", (req, res) =>
     Employee.findAll() // Incercam sa gasim datele din tabela Angajati
-    .then((employees) => {
-        console.log(employees); //In cazul in care se reuseste gasirii datelor, le v-om afisa in consola
+    .then((data) => {
+        res.send(data); //In cazul in care se reuseste gasirii datelor, le v-om afisa in consola
         res.sendStatus(200); //In cazul in care totul decurge ok, v-om afisa pe pagina web mesajul "OK"
     })
     .catch((err) => console.log(err))
@@ -35,18 +35,16 @@ router.post("/add", (req, res) => {
         Hire_date: req.body.hire_date,
         Salary: req.body.salary,
         Job_Title: req.body.job_title,
-        projectId: req.body.projectid,
+        projectId: req.body.projectId,
     };
 
     // Adaugarea datelor in baza de date
     Employee.create(adaugare)
-        .then((employees) => {
-            res.send(employees);
+        .then((data) => {
+            res.send(data);
         })
         .catch((err) => {
-            res.status(500).send({
-                message: err.message || "Nu am putut adauga datele in tabel.",
-            });
+            console.log(err);
         });
 });
 
@@ -113,14 +111,12 @@ router.delete("/delete/:id", (req, res) => {
                 });
             } else {
                 res.send({
-                    message: `Nu pot sterge angajatul cu id=${id}.`,
+                    message: `Nu pot sterge proiectul cu id=${id}.`,
                 });
             }
         })
         .catch((err) => {
-            res.status(500).send({
-                message: "Eroare la stergere angajat cu id=" + id,
-            });
+            console.log(err);
         });
 });
 

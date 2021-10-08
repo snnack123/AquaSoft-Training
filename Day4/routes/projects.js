@@ -6,8 +6,8 @@ module.exports = router;
 // Afiseaza toate proiectele
 router.get("/", (req, res) =>
     Project.findAll() // Incercam sa gasim datele din tabela Proiecte
-    .then((projects) => {
-        console.log(projects); //In cazul in care se reuseste gasirii datelor, le v-om afisa in consola
+    .then((data) => {
+        res.send(data); //In cazul in care se reuseste gasirii datelor, le v-om afisa in consola
         res.sendStatus(200); //In cazul in care totul decurge ok, v-om afisa pe pagina web mesajul "OK"
     })
     .catch((err) => console.log(err))
@@ -100,8 +100,6 @@ router.delete("/delete/:id", (req, res) => {
             }
         })
         .catch((err) => {
-            res.status(500).send({
-                message: "Eroare la stergere proiect cu id=" + id,
-            });
+            console.log(err);
         });
 });
