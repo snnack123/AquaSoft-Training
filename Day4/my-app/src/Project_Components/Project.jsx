@@ -1,12 +1,13 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import { nanoid } from "nanoid";
 import "../App.css";
-import data from "./ProjectData.json";
+//import data from "./ProjectData.json";
 import ReadOnlyRow from "./Project_ReadOnlyRow";
 import EditableRow from "./Project_EditableRow";
+import Axios from "axios";
 
 const Projects = () => {
-  const [contacts, setContacts] = useState(data);
+  const [contacts, setContacts] = useState([]);
   const [addFormData, setAddFormData] = useState({
     Project_name: "",
     Start_date: "",
@@ -25,9 +26,14 @@ const Projects = () => {
 
   const [editContactId, setEditContactId] = useState(null);
 
+  useEffect(() => {
+    Axios.get("http://localhost:5000/projects").then((res) => {
+      setContacts(res.data);
+    });
+  }, []);
+
   const handleAddFormChange = (event) => {
     event.preventDefault();
-
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
 
@@ -54,15 +60,19 @@ const Projects = () => {
 
     const newContact = {
       id: nanoid(),
-      Project_name: addFormData.Project_name,
-      Start_date: addFormData.Start_date,
-      Planned_end_date: addFormData.Planned_end_date,
-      Description: addFormData.Description,
-      Project_code: addFormData.Project_code,
+      project_name: addFormData.Project_name,
+      start_date: addFormData.Start_date,
+      planned_end_date: addFormData.Planned_end_date,
+      description: addFormData.Description,
+      project_code: addFormData.Project_code,
     };
 
     const newContacts = [...contacts, newContact];
     setContacts(newContacts);
+
+    Axios.post("http://localhost:5000/projects/add", newContact).then(() => {
+      alert("Succesful insert!");
+    });
   };
 
   const handleEditFormSubmit = (event) => {
@@ -85,6 +95,13 @@ const Projects = () => {
 
     setContacts(newContacts);
     setEditContactId(null);
+
+    Axios.put(
+      `http://localhost:5000/projects/update/${editContactId}`,
+      editedContact
+    ).then(() => {
+      alert("Succesful edit!");
+    });
   };
 
   const handleEditClick = (event, contact) => {
@@ -114,6 +131,12 @@ const Projects = () => {
     newContacts.splice(index, 1);
 
     setContacts(newContacts);
+
+    Axios.delete(`http://localhost:5000/projects/delete/${contactId}`).then(
+      () => {
+        alert("Succesful delete!");
+      }
+    );
   };
 
   return (
@@ -151,7 +174,6 @@ const Projects = () => {
           </tbody>
         </table>
       </form>
-
       <h1>Adaugare Proiect</h1>
       <form onSubmit={handleAddFormSubmit}>
         <input
@@ -180,7 +202,6 @@ const Projects = () => {
           />
           <span className="tooltiptext">Data Sfarsit</span>
         </div>
-
         <input
           type="text"
           name="Description"
