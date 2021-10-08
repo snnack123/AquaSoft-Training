@@ -1,12 +1,12 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import { nanoid } from "nanoid";
 import "../App.css";
-import data from "./EmployeeData.json";
 import ReadOnlyRow from "./Employee_ReadOnlyRow";
 import EditableRow from "./Employee_EditableRow";
+import Axios from "axios";
 
 const Employees = () => {
-  const [contacts, setContacts] = useState(data);
+  const [contacts, setContacts] = useState([]);
   const [addFormData, setAddFormData] = useState({
     Name: "",
     Adress: "",
@@ -26,12 +26,19 @@ const Employees = () => {
     Job_Title: "",
     projectId: "",
   });
-
+  //useEffect: permite să efectuez efecte secundare în componentele funcției
+  //update la DOM folosing API
   const [editContactId, setEditContactId] = useState(null);
+
+  useEffect(() => {
+    Axios.get("http://localhost:5000/employees").then((res) => {
+      setContacts(res.data);
+    });
+  }, []);
 
   const handleAddFormChange = (event) => {
     event.preventDefault();
-
+    //.preventDefault(): metoda anulează evenimentul dacă este anulabil, ceea ce înseamnă că acțiunea implicită care aparține evenimentului nu va avea loc.
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
 
@@ -58,17 +65,21 @@ const Employees = () => {
 
     const newContact = {
       id: nanoid(),
-      Name: addFormData.Name,
-      Adress: addFormData.Adress,
-      Email: addFormData.Email,
-      Hire_date: addFormData.Hire_date,
-      Salary: addFormData.Salary,
-      Job_Title: addFormData.Job_Title,
+      name: addFormData.Name,
+      adress: addFormData.Adress,
+      email: addFormData.Email,
+      hire_date: addFormData.Hire_date,
+      salary: addFormData.Salary,
+      job_title: addFormData.Job_Title,
       projectId: addFormData.projectId,
     };
 
     const newContacts = [...contacts, newContact];
     setContacts(newContacts);
+
+    Axios.post("http://localhost:5000/employees/add", newContact).then(() => {
+      alert("Succesful insert!");
+    });
   };
 
   const handleEditFormSubmit = (event) => {
@@ -93,6 +104,13 @@ const Employees = () => {
 
     setContacts(newContacts);
     setEditContactId(null);
+
+    Axios.put(
+      `http://localhost:5000/employees/update/${editContactId}`,
+      editedContact
+    ).then(() => {
+      alert("Succesful edit!");
+    });
   };
 
   const handleEditClick = (event, contact) => {
@@ -120,12 +138,18 @@ const Employees = () => {
     const newContacts = [...contacts];
 
     const index = contacts.findIndex((contact) => contact.id === contactId);
-
+    //findIndex: imi returneaza primul element dintr-o lista care indeplineste conditia
     newContacts.splice(index, 1);
-
+    //splice: metoda modifică conținutul unui tablou prin eliminarea sau înlocuirea elementelor existente și / sau adăugarea de elemente noi în loc
     setContacts(newContacts);
-  };
 
+    Axios.delete(`http://localhost:5000/employees/delete/${contactId}`).then(
+      () => {
+        alert("Succesful delete!");
+      }
+    );
+  };
+  //map: creează o nouă matrice populată cu rezultatele apelării unei funcții furnizate pe fiecare element din matricea de apelare.
   return (
     <div className="app-container">
       <form onSubmit={handleEditFormSubmit}>
