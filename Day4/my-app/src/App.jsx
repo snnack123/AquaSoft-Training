@@ -17,4 +17,6 @@ function App() {
   );
 }
 
+//Switch: este unic prin faptul că redă un traseu exclusiv. În schimb, fiecare <Rută> care se potrivește cu locația se afișează inclusiv
+
 export default App;
