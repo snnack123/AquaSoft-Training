@@ -21,7 +21,7 @@ const ReadOnlyRow = ({ contact, handleEditClick, handleDeleteClick }) => {
         <button
           type="button"
           className="btn delete"
-          onClick={() => handleDeleteClick(contact.id)}
+          onClick={() => handleDeleteClick(contact.Id)}
         >
           Delete
         </button>

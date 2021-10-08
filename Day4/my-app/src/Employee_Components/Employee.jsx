@@ -31,9 +31,13 @@ const Employees = () => {
   const [editContactId, setEditContactId] = useState(null);
 
   useEffect(() => {
-    Axios.get("http://localhost:5000/employees").then((res) => {
-      setContacts(res.data);
-    });
+    Axios.get("http://localhost:5000/employees")
+      .then((res) => {
+        setContacts(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   const handleAddFormChange = (event) => {
@@ -43,9 +47,12 @@ const Employees = () => {
     const fieldValue = event.target.value;
 
     const newFormData = { ...addFormData };
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
     newFormData[fieldName] = fieldValue;
 
     setAddFormData(newFormData);
+    //modifici state-ul componentei si isi da din nou render
   };
 
   const handleEditFormChange = (event) => {
@@ -55,9 +62,12 @@ const Employees = () => {
     const fieldValue = event.target.value;
 
     const newFormData = { ...editFormData };
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
     newFormData[fieldName] = fieldValue;
 
     setEditFormData(newFormData);
+    //modifici state-ul componentei si isi da din nou render
   };
 
   const handleAddFormSubmit = (event) => {
@@ -76,10 +86,15 @@ const Employees = () => {
 
     const newContacts = [...contacts, newContact];
     setContacts(newContacts);
+    //modifici state-ul componentei si isi da din nou render
 
-    Axios.post("http://localhost:5000/employees/add", newContact).then(() => {
-      alert("Succesful insert!");
-    });
+    Axios.post("http://localhost:5000/employees/add", newContact)
+      .then(() => {
+        alert("Succesful insert!");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleEditFormSubmit = (event) => {
@@ -97,25 +112,31 @@ const Employees = () => {
     };
 
     const newContacts = [...contacts];
-
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
     const index = contacts.findIndex((contact) => contact.id === editContactId);
 
     newContacts[index] = editedContact;
 
     setContacts(newContacts);
     setEditContactId(null);
+    //modifici state-ul componentei si isi da din nou render
 
     Axios.put(
       `http://localhost:5000/employees/update/${editContactId}`,
       editedContact
-    ).then(() => {
-      alert("Succesful edit!");
-    });
+    )
+      .then(() => {
+        alert("Succesful edit!");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleEditClick = (event, contact) => {
     event.preventDefault();
-    setEditContactId(contact.id);
+    setEditContactId(contact.Id);
 
     const formValues = {
       Name: contact.Name,
@@ -128,6 +149,7 @@ const Employees = () => {
     };
 
     setEditFormData(formValues);
+    //modifici state-ul componentei si isi da din nou render
   };
 
   const handleCancelClick = () => {
@@ -136,18 +158,22 @@ const Employees = () => {
 
   const handleDeleteClick = (contactId) => {
     const newContacts = [...contacts];
-
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
     const index = contacts.findIndex((contact) => contact.id === contactId);
     //findIndex: imi returneaza primul element dintr-o lista care indeplineste conditia
     newContacts.splice(index, 1);
     //splice: metoda modifică conținutul unui tablou prin eliminarea sau înlocuirea elementelor existente și / sau adăugarea de elemente noi în loc
+    //sterge 1 singur element dupa pozitia index
     setContacts(newContacts);
-
-    Axios.delete(`http://localhost:5000/employees/delete/${contactId}`).then(
-      () => {
+    //modifici state-ul componentei si isi da din nou render
+    Axios.delete(`http://localhost:5000/employees/delete/${contactId}`)
+      .then(() => {
         alert("Succesful delete!");
-      }
-    );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
   //map: creează o nouă matrice populată cu rezultatele apelării unei funcții furnizate pe fiecare element din matricea de apelare.
   return (
@@ -169,7 +195,7 @@ const Employees = () => {
           <tbody>
             {contacts.map((contact) => (
               <Fragment>
-                {editContactId === contact.id ? (
+                {editContactId === contact.Id ? (
                   <EditableRow
                     editFormData={editFormData}
                     handleEditFormChange={handleEditFormChange}
