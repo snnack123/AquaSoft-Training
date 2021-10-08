@@ -27,9 +27,13 @@ const Projects = () => {
   const [editContactId, setEditContactId] = useState(null);
 
   useEffect(() => {
-    Axios.get("http://localhost:5000/projects").then((res) => {
-      setContacts(res.data);
-    });
+    Axios.get("http://localhost:5000/projects")
+      .then((res) => {
+        setContacts(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   const handleAddFormChange = (event) => {
@@ -38,6 +42,8 @@ const Projects = () => {
     const fieldValue = event.target.value;
 
     const newFormData = { ...addFormData };
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sines
     newFormData[fieldName] = fieldValue;
 
     setAddFormData(newFormData);
@@ -50,6 +56,8 @@ const Projects = () => {
     const fieldValue = event.target.value;
 
     const newFormData = { ...editFormData };
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
     newFormData[fieldName] = fieldValue;
 
     setEditFormData(newFormData);
@@ -68,11 +76,17 @@ const Projects = () => {
     };
 
     const newContacts = [...contacts, newContact];
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
     setContacts(newContacts);
 
-    Axios.post("http://localhost:5000/projects/add", newContact).then(() => {
-      alert("Succesful insert!");
-    });
+    Axios.post("http://localhost:5000/projects/add", newContact)
+      .then(() => {
+        alert("Succesful insert!");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleEditFormSubmit = (event) => {
@@ -88,6 +102,8 @@ const Projects = () => {
     };
 
     const newContacts = [...contacts];
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
 
     const index = contacts.findIndex((contact) => contact.id === editContactId);
 
@@ -99,9 +115,13 @@ const Projects = () => {
     Axios.put(
       `http://localhost:5000/projects/update/${editContactId}`,
       editedContact
-    ).then(() => {
-      alert("Succesful edit!");
-    });
+    )
+      .then((res) => {
+        alert("Succesful edit!");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const handleEditClick = (event, contact) => {
@@ -125,18 +145,24 @@ const Projects = () => {
 
   const handleDeleteClick = (contactId) => {
     const newContacts = [...contacts];
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
 
     const index = contacts.findIndex((contact) => contact.id === contactId);
-
+    //findIndex: imi returneaza primul element dintr-o lista care indeplineste conditia
     newContacts.splice(index, 1);
-
+    //sterge 1 singur element dupa pozitia index
+    //splice: metoda modifică conținutul unui tablou prin eliminarea sau înlocuirea elementelor existente și / sau adăugarea de elemente noi în loc
     setContacts(newContacts);
+    //modifici state-ul componentei si isi da din nou render
 
-    Axios.delete(`http://localhost:5000/projects/delete/${contactId}`).then(
-      () => {
+    Axios.delete(`http://localhost:5000/projects/delete/${contactId}`)
+      .then(() => {
         alert("Succesful delete!");
-      }
-    );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
