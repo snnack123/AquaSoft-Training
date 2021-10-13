@@ -1,13 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../models");
-const Account = db.account; //Preluam datele pe care am vrut sa le afisam. Date selectate in Account.js
-const bcrypt = require("bcryptjs");
-
+const Project = db.project; //Preluam datele pe care am vrut sa le afisam. Date selectate in Project.js
 module.exports = router;
-// Afiseaza toate conturile
+// Afiseaza toate proiectele
 router.get("/", (req, res) =>
-    Account.findAll() // Incercam sa gasim datele din tabela Conturi
+    Project.findAll() // Incercam sa gasim datele din tabela Proiecte
     .then((data) => {
         res.send(data); //In cazul in care se reuseste gasirii datelor, le v-om afisa in consola
         res.sendStatus(200); //In cazul in care totul decurge ok, v-om afisa pe pagina web mesajul "OK"
@@ -15,36 +13,21 @@ router.get("/", (req, res) =>
     .catch((err) => console.log(err))
 );
 
-router.get("/login/:username&:password", async(req, res) => {
-    const username = req.params.username;
-    const password = req.params.password;
-
-    Account.findOne({ where: { Username: username } })
-        .then((data) => {
-            const checkPassword = bcrypt.compareSync(password, data.Password);
-            res.send(checkPassword);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
-
-// Adaugare cont
-router.post("/add", async(req, res) => {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+// Adaugare proiect
+router.post("/add", (req, res) => {
     // Ce date vrem sa adaugam
     const adaugare = {
-        Name: req.body.name,
-        Username: req.body.username,
-        Password: hashedPassword,
-        Email: req.body.email,
-        Adress: req.body.adress,
+        Project_name: req.body.project_name,
+        Start_date: req.body.start_date,
+        Planned_end_date: req.body.planned_end_date,
+        Description: req.body.description,
+        Project_code: req.body.project_code,
     };
 
     // Adaugarea datelor in baza de date
-    Account.create(adaugare)
-        .then((accounts) => {
-            res.send(accounts);
+    Project.create(adaugare)
+        .then((projects) => {
+            res.send(projects);
         })
         .catch((err) => {
             res.status(500).send({
@@ -56,18 +39,18 @@ router.post("/add", async(req, res) => {
 /*
 Exemplu:
 {
-   "name": "Adrian",
-   "username": "admin",
-   "password": "admin1234",
-   "email": "lungu@yahoo.com",
-   "adress": "Ghencea"
+   "project_name": "Test",
+   "start_date": "01.01.2020",
+   "planned_end_date": "01.01.2020",
+   "description": "test",
+   "project_code": "4315"
 }
 */
 
-// Update date cont prin id
+// Update date proiect prin id
 router.put("/update/:id", (req, res) => {
     const id = req.params.id;
-    Account.update(req.body, {
+    Project.update(req.body, {
             where: { id: id },
         })
         .then((num) => {
@@ -77,7 +60,7 @@ router.put("/update/:id", (req, res) => {
                 });
             } else {
                 res.send({
-                    message: `Nu pot actualiza informatiile pentru contul cu id=${id}.`,
+                    message: `Nu pot actualiza informatiile pentru proiectul cu id=${id}.`,
                 });
             }
         })
@@ -91,24 +74,24 @@ router.put("/update/:id", (req, res) => {
 /* 
 Exemplu:
 {
-   "Name":"Adrian"
-   "Username": "admin",
-   "Password": "admin12345",
-   "Email": "lungu1@yahoo.com",
-   "Adress": "Ghencea"
+   "Project_name": "Frontend",
+   "Start_date": "01.01.2020",
+   "Planned_end_date": "01.01.2020",
+   "Description": "usor",
+   "Project_code": "4315"
 }
 */
-// Stergere date cont prin id
+// Stergere date proiect prin id
 router.delete("/delete/:id", (req, res) => {
     const id = req.params.id;
 
-    Account.destroy({
+    Project.destroy({
             where: { id: id },
         })
         .then((num) => {
             if (num == 1) {
                 res.send({
-                    message: "Contul a fost sters cu succes!",
+                    message: "Proiectul a fost sters cu succes!",
                 });
             } else {
                 res.send({
