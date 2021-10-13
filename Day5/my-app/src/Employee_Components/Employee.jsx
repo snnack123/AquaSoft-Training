@@ -1,0 +1,290 @@
+import React, { useState, Fragment, useEffect } from "react";
+import ReadOnlyRow from "./Employee_ReadOnlyRow";
+import EditableRow from "./Employee_EditableRow";
+import Axios from "axios";
+import NavbarTables from "../NavbarTables";
+import { useHistory } from "react-router-dom";
+//axios = librarie folosita sa facem requesturi de tip HTTP
+
+const Employees = () => {
+  const [contacts, setContacts] = useState([]);
+  //useState(): returneaza o tupla
+  //contacts - variabila care reprezinta state-ul in sine
+  //setContacts functia ca sa actualizez variabila state si pagina isi da update
+  const [addFormData, setAddFormData] = useState({
+    Name: "",
+    Adress: "",
+    Email: "",
+    Hire_date: "",
+    Salary: "",
+    Job_Title: "",
+    projectId: "",
+  });
+
+  const [editFormData, setEditFormData] = useState({
+    Name: "",
+    Adress: "",
+    Email: "",
+    Hire_date: "",
+    Salary: "",
+    Job_Title: "",
+    projectId: "",
+  });
+  //useEffect: permite să efectuez efecte secundare în componentele funcției
+  //update la DOM folosing API
+  const [editContactId, setEditContactId] = useState(null);
+  let history = useHistory();
+  useEffect(() => {
+    if (localStorage.getItem("loggedIn") !== "true") {
+      history.push("/Login");
+    }
+  });
+  useEffect(() => {
+    Axios.get("http://localhost:5000/employees")
+      .then((res) => {
+        setContacts(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  const handleAddFormChange = (event) => {
+    event.preventDefault();
+    //.preventDefault(): metoda anulează evenimentul dacă este anulabil, ceea ce înseamnă că acțiunea implicită care aparține evenimentului nu va avea loc.
+    const fieldName = event.target.getAttribute("name");
+    const fieldValue = event.target.value;
+
+    const newFormData = { ...addFormData };
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
+    newFormData[fieldName] = fieldValue;
+
+    setAddFormData(newFormData);
+    //modifici state-ul componentei si isi da din nou render
+  };
+
+  const handleEditFormChange = (event) => {
+    event.preventDefault();
+    //.preventDefault(): metoda anulează evenimentul dacă este anulabil, ceea ce înseamnă că acțiunea implicită care aparține evenimentului nu va avea loc.
+    const fieldName = event.target.getAttribute("name");
+    const fieldValue = event.target.value;
+
+    const newFormData = { ...editFormData };
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
+    newFormData[fieldName] = fieldValue;
+
+    setEditFormData(newFormData);
+    //modifici state-ul componentei si isi da din nou render
+  };
+
+  const handleAddFormSubmit = (event) => {
+    event.preventDefault();
+    //.preventDefault(): metoda anulează evenimentul dacă este anulabil, ceea ce înseamnă că acțiunea implicită care aparține evenimentului nu va avea loc.
+    const newContact = {
+      name: addFormData.Name,
+      adress: addFormData.Adress,
+      email: addFormData.Email,
+      hire_date: addFormData.Hire_date,
+      salary: addFormData.Salary,
+      job_title: addFormData.Job_Title,
+      projectId: addFormData.projectId,
+    };
+
+    const newContacts = [...contacts, newContact];
+    setContacts(newContacts);
+    //modifici state-ul componentei si isi da din nou render
+
+    Axios.post("http://localhost:5000/employees/add", newContact)
+      .then(() => {
+        alert("Succesful insert!");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleEditFormSubmit = (event) => {
+    event.preventDefault();
+    //.preventDefault(): metoda anulează evenimentul dacă este anulabil, ceea ce înseamnă că acțiunea implicită care aparține evenimentului nu va avea loc.
+    const editedContact = {
+      id: editContactId,
+      Name: editFormData.Name,
+      Adress: editFormData.Adress,
+      Email: editFormData.Email,
+      Hire_date: editFormData.Hire_date,
+      Salary: editFormData.Salary,
+      Job_Title: editFormData.Job_Title,
+      projectId: editFormData.projectId,
+    };
+
+    const newContacts = [...contacts];
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
+    const index = contacts.findIndex((contact) => contact.id === editContactId);
+
+    newContacts[index] = editedContact;
+
+    setContacts(newContacts);
+    setEditContactId(null);
+    //modifici state-ul componentei si isi da din nou render
+
+    Axios.put(
+      `http://localhost:5000/employees/update/${editContactId}`,
+      editedContact
+    )
+      .then(() => {
+        alert("Succesful edit!");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleEditClick = (event, contact) => {
+    event.preventDefault();
+    setEditContactId(contact.Id);
+    //.preventDefault(): metoda anulează evenimentul dacă este anulabil, ceea ce înseamnă că acțiunea implicită care aparține evenimentului nu va avea loc.
+    const formValues = {
+      Name: contact.Name,
+      Adress: contact.Adress,
+      Email: contact.Email,
+      Hire_date: contact.Hire_date,
+      Salary: contact.Salary,
+      Job_Title: contact.Job_Title,
+      projectId: contact.projectId,
+    };
+
+    setEditFormData(formValues);
+    //modifici state-ul componentei si isi da din nou render
+  };
+
+  const handleCancelClick = () => {
+    setEditContactId(null);
+  };
+
+  const handleDeleteClick = (contactId) => {
+    const newContacts = [...contacts];
+    //am copiatt array-ul fara sa ii iau referinta. Shallow copy. Copie doar a continutului
+    //nu si a obiectului in sine
+    const index = contacts.findIndex((contact) => contact.id === contactId);
+    //findIndex: imi returneaza primul element dintr-o lista care indeplineste conditia
+    newContacts.splice(index, 1);
+    //splice: metoda modifică conținutul unui tablou prin eliminarea sau înlocuirea elementelor existente și / sau adăugarea de elemente noi în loc
+    //sterge 1 singur element dupa pozitia index
+    setContacts(newContacts);
+    //modifici state-ul componentei si isi da din nou render
+    Axios.delete(`http://localhost:5000/employees/delete/${contactId}`)
+      .then(() => {
+        alert("Succesful delete!");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  //map: creează o nouă matrice populată cu rezultatele apelării unei funcții furnizate pe fiecare element din matricea de apelare.
+  //fragment: o componentă pentru a returna mai multe elemente
+  return (
+    <div className="app-container">
+      <NavbarTables />
+      <form onSubmit={handleEditFormSubmit}>
+        <table>
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Nume</th>
+              <th>Adresa</th>
+              <th>Email</th>
+              <th>Data Angajare</th>
+              <th>Salariu</th>
+              <th>Job</th>
+              <th>Id Proiect</th>
+              <th>Actiuni</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contacts.map((contact) => (
+              <Fragment>
+                {editContactId === contact.Id ? (
+                  <EditableRow
+                    contact={contact}
+                    editFormData={editFormData}
+                    handleEditFormChange={handleEditFormChange}
+                    handleCancelClick={handleCancelClick}
+                  />
+                ) : (
+                  <ReadOnlyRow
+                    contact={contact}
+                    handleEditClick={handleEditClick}
+                    handleDeleteClick={handleDeleteClick}
+                  />
+                )}
+              </Fragment>
+            ))}
+          </tbody>
+        </table>
+      </form>
+
+      <h1>Adaugare Angajat</h1>
+      <form onSubmit={handleAddFormSubmit}>
+        <input
+          type="text"
+          name="Name"
+          required="required"
+          placeholder="Nume Angajat"
+          onChange={handleAddFormChange}
+        />
+        <input
+          type="text"
+          name="Adress"
+          required="required"
+          placeholder="Adresa"
+          onChange={handleAddFormChange}
+        />
+        <input
+          type="email"
+          name="Email"
+          required="required"
+          placeholder="Email"
+          onChange={handleAddFormChange}
+        />
+        <div className="tooltip">
+          <input
+            type="date"
+            name="Hire_date"
+            required="required"
+            onChange={handleAddFormChange}
+          />
+          <span className="tooltiptext">Data Angajare</span>
+        </div>
+        <input
+          type="text"
+          name="Salary"
+          required="required"
+          placeholder="Salariu"
+          onChange={handleAddFormChange}
+        />
+        <input
+          type="text"
+          name="Job_Title"
+          required="required"
+          placeholder="Job"
+          onChange={handleAddFormChange}
+        />
+        <input
+          type="text"
+          name="projectId"
+          required="required"
+          placeholder="Id Proiect"
+          onChange={handleAddFormChange}
+        />
+        <button type="submit" className="btn">
+          Add
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default Employees;
