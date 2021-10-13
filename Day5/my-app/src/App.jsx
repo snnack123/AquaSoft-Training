@@ -4,14 +4,15 @@ import Employees from "./Employee_Components/Employee";
 import Projects from "./Project_Components/Project";
 import Register from "./RegisterAndLogin/Register";
 import Login from "./RegisterAndLogin/Login";
-import Navbar from "./Navbar";
+import Home from "./Home";
+
 import "./App.css";
 
 function App() {
   return (
     <Router>
-      <Navbar />
       <Switch>
+        <Route path="/Home" component={Home}></Route>
         <Route path="/Employee" component={Employees}></Route>
         <Route path="/Project" component={Projects}></Route>
         <Route path="/Register" component={Register}></Route>
