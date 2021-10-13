@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import "../css.css";
+import React, { useState, useEffect } from "react";
 import Axios from "axios";
+import NavbarRegister from "../NavbarRegister";
+import { useHistory } from "react-router-dom";
 
 const Register = () => {
   const [contacts, setContacts] = useState([]);
@@ -11,10 +12,15 @@ const Register = () => {
     Email: "",
     Adress: "",
   });
-
+  let history = useHistory();
+  useEffect(() => {
+    if (localStorage.getItem("loggedIn") === "true") {
+      history.push("/Home");
+    }
+  });
   const handleAddFormChange = (event) => {
     event.preventDefault();
-    //.preventDefault(): metoda anulează evenimentul dacă este anulabil, ceea ce înseamnă că acțiunea implicită care aparține evenimentului nu va avea loc.
+    //.preventDefault(): oprima pagina sa dea refresh dupa ce am apasat pe butonul de submit
     const fieldName = event.target.getAttribute("name");
     const fieldValue = event.target.value;
 
@@ -52,66 +58,64 @@ const Register = () => {
   };
 
   return (
-    <div className="registerForm">
-      <form action="/action_page.php" onSubmit={handleAddFormSubmit}>
-        <div className="container">
-          <h1>Inregistrare utilizator</h1>
-          <hr />
-          <label for="Name">
-            <b>Nume</b>
-          </label>
-          <input
-            type="text"
-            placeholder="Numele"
-            name="Name"
-            required="required"
-            onChange={handleAddFormChange}
-          ></input>
-          <label for="Username">
-            <b>Username</b>
-          </label>
-          <input
-            type="text"
-            placeholder="Username"
-            name="Username"
-            required="required"
-            onChange={handleAddFormChange}
-          ></input>
-          <label for="Password">
-            <b>Parola</b>
-          </label>
-          <input
-            type="password"
-            placeholder="Scrie parola"
-            name="Password"
-            required="required"
-            onChange={handleAddFormChange}
-          ></input>
-          <label for="Email">
-            <b>Email</b>
-          </label>
-          <input
-            type="text"
-            placeholder="Scrie Email"
-            name="Email"
-            required="required"
-            onChange={handleAddFormChange}
-          ></input>
-          <label for="Adress">
-            <b>Adresa</b>
-          </label>
-          <input
-            type="text"
-            placeholder="Adresa"
-            name="Adress"
-            required="required"
-            onChange={handleAddFormChange}
-          ></input>
-          <button type="submit" className="registerbtn">
-            Inregistrare
-          </button>
-        </div>
-      </form>
+    <div>
+      <NavbarRegister />
+      <div className="loginForm">
+        <form action="/action_page.php" onSubmit={handleAddFormSubmit}>
+          <div className="container">
+            <h1 className="form_title">Inregistrare utilizator</h1>
+            <hr />
+            <label for="Name">Nume</label>
+            <input
+              type="text"
+              placeholder="Numele"
+              name="Name"
+              required="required"
+              className="loginInput"
+              onChange={handleAddFormChange}
+            ></input>
+            <label for="Username">Username</label>
+            <input
+              type="text"
+              placeholder="Username"
+              name="Username"
+              required="required"
+              className="loginInput"
+              onChange={handleAddFormChange}
+            ></input>
+            <label for="Password">Parola</label>
+            <input
+              type="password"
+              placeholder="Scrie parola"
+              name="Password"
+              required="required"
+              className="loginInput"
+              onChange={handleAddFormChange}
+            ></input>
+            <label for="Email">Email</label>
+            <input
+              type="text"
+              placeholder="Scrie Email"
+              name="Email"
+              required="required"
+              className="loginInput"
+              onChange={handleAddFormChange}
+            ></input>
+            <label for="Adress">Adresa</label>
+            <input
+              type="text"
+              placeholder="Adresa"
+              name="Adress"
+              required="required"
+              className="loginInput"
+              onChange={handleAddFormChange}
+            ></input>
+            <button type="submit" className="loginbtn">
+              Inregistrare
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
